@@ -516,9 +516,10 @@ function rearPoint(){
 
 function jet(getP, ms){
   const t0 = performance.now();
+  const k = Math.min(1, Math.max(.4, catW / 210));
   function f(now){
     const p = getP();
-    C.burst(p.x, p.y, {count: 9, a0: 155, a1: 225, s0: 7, s1: 19});
+    C.burst(p.x, p.y, {count: 6, a0: 160, a1: 215, s0: 3 * k, s1: 12 * k, size: Math.max(.6, k), g: .7});
     if (now - t0 < ms) requestAnimationFrame(f);
   }
   requestAnimationFrame(f);
@@ -541,10 +542,12 @@ async function ending(){
   cat.classList.add('shy'); A.blush(); await sleep(750);
   cat.classList.add('puff'); const p = rearPoint();
   A.puff(); puffCloud(p);
-  C.burst(p.x, p.y, {count: 140, a0: 160, a1: 230, s0: 8, s1: 22});
-  jet(rearPoint, 800);
+  const k = Math.min(1, Math.max(.4, catW / 210));
+  C.burst(p.x, p.y, {count: 30, a0: 0, a1: 360, s0: .3, s1: 2 * k, g: .12, drag: .94, life: 1600, size: Math.max(.6, k)});
+  C.burst(p.x, p.y, {count: 90, a0: 160, a1: 220, s0: 5 * k, s1: 16 * k, size: Math.max(.6, k)});
+  jet(rearPoint, 1300);
   caption('');
-  await sleep(850);
+  await sleep(1350);
   cat.classList.remove('puff', 'look'); cat.classList.add('proud');
   C.rain(2600, 6);
   await sleep(1300);
