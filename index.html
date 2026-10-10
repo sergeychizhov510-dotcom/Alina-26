@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="only light">
 <title>Открытка для Алины</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,7 +24,7 @@
   --f-pipe:"Amatic SC","Comic Sans MS",cursive;
   --f-display:"Forum","Cormorant Garamond",Georgia,serif;
   --f-body:"Cormorant Garamond",Georgia,"Times New Roman",serif;
-  color-scheme:light;
+  color-scheme:only light;
 }
 html,body{height:100%}
 body{
@@ -483,7 +484,7 @@ function caption(t){ capEl.textContent = t; }
 function walk(){
   return new Promise(res => {
     cat.className = 'cat walking';
-    const speed = (endX - startX) / 11.2;
+    const speed = (endX - startX) / 8;
     const step = Math.min(.8, Math.max(.4, .3 * catW / speed));
     cat.style.setProperty('--step', step.toFixed(2) + 's');
     let x = startX, last = performance.now(), idx = 0, hopping = false;
