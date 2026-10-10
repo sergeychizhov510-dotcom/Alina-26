@@ -61,8 +61,8 @@ button:focus-visible{outline:3px solid var(--cherry);outline-offset:4px}
 .cat svg{display:block;width:100%;height:100%;overflow:visible}
 .cat .all{transform-box:fill-box;transform-origin:50% 100%}
 .cat .leg{transform-box:fill-box;transform-origin:50% 8%;transition:transform .25s}
-.cat.walking .leg.a{animation:leg .44s ease-in-out infinite}
-.cat.walking .leg.b{animation:leg .44s ease-in-out -.22s infinite}
+.cat.walking .leg.a{animation:leg var(--step,.44s) ease-in-out infinite}
+.cat.walking .leg.b{animation:leg var(--step,.44s) ease-in-out calc(var(--step,.44s) / -2) infinite}
 @keyframes leg{0%,100%{transform:rotate(20deg)}50%{transform:rotate(-20deg)}}
 .cat.hop .leg{animation:none!important}
 .cat.hop .leg.back{transform:rotate(35deg)}
@@ -483,7 +483,9 @@ function caption(t){ capEl.textContent = t; }
 function walk(){
   return new Promise(res => {
     cat.className = 'cat walking';
-    const speed = Math.max(170, (endX - startX) / 6.2);
+    const speed = (endX - startX) / 11.2;
+    const step = Math.min(.8, Math.max(.4, .3 * catW / speed));
+    cat.style.setProperty('--step', step.toFixed(2) + 's');
     let x = startX, last = performance.now(), idx = 0, hopping = false;
     function frame(now){
       const dt = Math.min(.05, (now - last) / 1000); last = now;
@@ -508,19 +510,23 @@ function walk(){
 
 function rearPoint(){
   const tr = track.getBoundingClientRect();
-  return {x: tr.left + curX + catW * (46 / 230), y: tr.top + catTop + catH * (94 / 175)};
+  return {x: tr.left + curX + catW * (46 / 230), y: tr.top + catTop + catH * (97 / 175)};
+}
+
+function jet(getP, ms){
+  const t0 = performance.now();
+  function f(now){
+    const p = getP();
+    C.burst(p.x, p.y, {count: 9, a0: 155, a1: 225, s0: 7, s1: 19});
+    if (now - t0 < ms) requestAnimationFrame(f);
+  }
+  requestAnimationFrame(f);
 }
 
 function puffCloud(p){
   const wrap = document.createElement('div'); wrap.className = 'puff-cloud';
   wrap.style.transform = `translate(${p.x}px, ${p.y}px)`;
   const sz = catW * .32;
-  [[-.2,0,1],[-.9,-.25,.8],[-.55,-.75,.7],[-1.4,-.7,.6],[-1.2,.2,.65],[-.1,-.6,.55]].forEach(([dx, dy, k], i) => {
-    const c = document.createElement('span'); c.className = 'pc'; const s = sz * k;
-    c.style.width = c.style.height = s + 'px'; c.style.left = dx * sz + 'px'; c.style.top = dy * sz + 'px';
-    c.style.setProperty('--dx', (-20 - Math.random() * 30) + 'px'); c.style.setProperty('--dy', (-20 - Math.random() * 30) + 'px');
-    c.style.animationDelay = i * 45 + 'ms'; wrap.appendChild(c);
-  });
   const w = document.createElement('span'); w.className = 'pf-word'; w.textContent = 'пуф!';
   w.style.fontSize = Math.max(34, catW * .34) + 'px'; w.style.left = (-1.5 * sz) + 'px'; w.style.top = (-1.2 * sz) + 'px';
   wrap.appendChild(w);
@@ -534,10 +540,10 @@ async function ending(){
   cat.classList.add('shy'); A.blush(); await sleep(750);
   cat.classList.add('puff'); const p = rearPoint();
   A.puff(); puffCloud(p);
-  C.burst(p.x, p.y, {count: 320, a0: 150, a1: 265, s0: 6, s1: 24});
-  C.burst(p.x, p.y, {count: 60, a0: 0, a1: 360, s0: 2, s1: 8});
+  C.burst(p.x, p.y, {count: 140, a0: 160, a1: 230, s0: 8, s1: 22});
+  jet(rearPoint, 800);
   caption('');
-  await sleep(500);
+  await sleep(850);
   cat.classList.remove('puff', 'look'); cat.classList.add('proud');
   C.rain(2600, 6);
   await sleep(1300);
